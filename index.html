@@ -173,6 +173,9 @@
                         ডিসপ্লের ছবি <span class="text-red-500">*</span>
                     </label>
                     
+                    <!-- Hidden Native Camera Input -->
+                    <input type="file" id="nativeCameraInput" accept="image/*" capture="environment" class="hidden">
+
                     <!-- Camera Trigger Button (Visible by default) -->
                     <div id="cameraTriggerContainer">
                         <button type="button" id="openCameraBtn" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors group">
@@ -181,25 +184,6 @@
                             </div>
                             <span class="text-sm font-bold text-red-700">ক্যামেরা দিয়ে ছবি তুলুন</span>
                         </button>
-                    </div>
-
-                    <!-- Camera Container (Hidden by default) -->
-                    <div id="cameraContainer" class="hidden mt-2">
-                        <div class="relative rounded-lg overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full">
-                            <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
-                            
-                            <!-- Overlay Text for Preview -->
-                            <div class="absolute bottom-2 left-2 text-white text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
-                                তারিখ, সময় ও লোকেশন যুক্ত হবে
-                            </div>
-
-                            <button type="button" id="captureBtn" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-lg hover:scale-105 transition-transform">
-                                <div class="w-14 h-14 rounded-full border-4 border-red-600 flex items-center justify-center bg-white">
-                                    <div class="w-10 h-10 rounded-full bg-red-600"></div>
-                                </div>
-                            </button>
-                        </div>
-                        <button type="button" id="closeCameraBtn" class="mt-2 text-sm text-red-600 hover:text-red-800 w-full text-center">ক্যামেরা বন্ধ করুন</button>
                     </div>
 
                     <!-- Captured Preview Container (Hidden by default) -->
@@ -266,17 +250,13 @@
         
         // Camera Elements
         const openCameraBtn = document.getElementById('openCameraBtn');
-        const closeCameraBtn = document.getElementById('closeCameraBtn');
-        const captureBtn = document.getElementById('captureBtn');
+        const nativeCameraInput = document.getElementById('nativeCameraInput');
         const retakeBtn = document.getElementById('retakeBtn');
         const cameraTriggerContainer = document.getElementById('cameraTriggerContainer');
-        const cameraContainer = document.getElementById('cameraContainer');
         const previewContainer = document.getElementById('previewContainer');
-        const cameraFeed = document.getElementById('cameraFeed');
         const capturedImagePreview = document.getElementById('capturedImagePreview');
         const processCanvas = document.getElementById('processCanvas');
 
-        let stream = null;
         let capturedImageData = null; // Stores the Base64 of captured image
 
         // Data for Area to Distribution mapping
@@ -317,51 +297,52 @@
             });
         });
 
-        // --- CAMERA FUNCTIONS ---
+        // --- NATIVE CAMERA FUNCTIONS ---
 
-        // Open Camera
-        openCameraBtn.addEventListener('click', async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } // Prefer back camera
-                });
-                cameraFeed.srcObject = stream;
+        // Open Native Camera
+        openCameraBtn.addEventListener('click', () => {
+            nativeCameraInput.click();
+        });
+
+        // Process Captured Image
+        nativeCameraInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const img = new Image();
+                const objectUrl = URL.createObjectURL(file);
                 
-                cameraTriggerContainer.classList.add('hidden');
-                cameraContainer.classList.remove('hidden');
-            } catch (err) {
-                console.error("Camera Error:", err);
-                alert("ক্যামেরা ওপেন করা যাচ্ছে না। অনুগ্রহ করে পারমিশন চেক করুন।");
+                img.onload = () => {
+                    const ctx = processCanvas.getContext('2d');
+                    
+                    // Set canvas dimensions to match the image
+                    processCanvas.width = img.width;
+                    processCanvas.height = img.height;
+                    
+                    // Draw original image
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // --- CUSTOM TIMESTAMP DESIGN ---
+                    applyTimestamp(ctx, processCanvas.width, processCanvas.height);
+                    // -----------------------------
+                    
+                    // Export to Base64
+                    capturedImageData = processCanvas.toDataURL('image/jpeg', 0.8); // Compress slightly
+                    
+                    // Show Preview
+                    capturedImagePreview.src = capturedImageData;
+                    cameraTriggerContainer.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                    
+                    // Cleanup
+                    URL.revokeObjectURL(objectUrl);
+                };
+                
+                img.src = objectUrl;
             }
         });
 
-        // Close Camera
-        closeCameraBtn.addEventListener('click', () => {
-            stopCamera();
-            cameraContainer.classList.add('hidden');
-            cameraTriggerContainer.classList.remove('hidden');
-        });
-
-        // Stop Camera Stream
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-        }
-
-        // Capture Photo
-        captureBtn.addEventListener('click', () => {
-            const ctx = processCanvas.getContext('2d');
-            
-            // Set canvas size to match video resolution
-            processCanvas.width = cameraFeed.videoWidth;
-            processCanvas.height = cameraFeed.videoHeight;
-            
-            // Draw video frame
-            ctx.drawImage(cameraFeed, 0, 0, processCanvas.width, processCanvas.height);
-            
-            // --- CUSTOM TIMESTAMP DESIGN ---
+        // Timestamp Logic (Extracted for clarity)
+        function applyTimestamp(ctx, w, h) {
             const now = new Date();
             
             // Date Format: 29-Jan-2026
@@ -373,23 +354,16 @@
             // Time Format: 11:30 AM
             const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); 
             
-            // CHANGED TITLE HERE
             const titleStr = "Colgate Smile Corner";
             
-            // Dimensions relative to image size
-            const w = processCanvas.width;
-            const h = processCanvas.height;
-            const padding = w * 0.015; // Even smaller padding
+            const padding = w * 0.015; 
             
-            // Font Sizes (Significantly reduced "More Little")
+            // Font Sizes
             const dateFontSize = w * 0.025;
             const timeFontSize = w * 0.025;
             const titleFontSize = w * 0.028;
             
-            // Font Family
             const font = "sans-serif";
-            
-            // Calculate Position
             const lineHeight = 1.3;
             const totalTextHeight = (dateFontSize + timeFontSize + titleFontSize) * lineHeight;
             
@@ -398,60 +372,42 @@
             const startX = margin + padding;
             let currentY = h - totalTextHeight - margin;
             
-            // Set Stroke (Outline) - Thinner for smaller text
+            // Set Stroke (Outline)
             ctx.strokeStyle = 'black';
-            ctx.lineWidth = w * 0.004; // Thinner stroke
+            ctx.lineWidth = w * 0.004; 
             ctx.lineJoin = 'round';
             ctx.textBaseline = 'top';
 
-            // 1. Date (White with Black Outline)
+            // 1. Date
             ctx.font = `bold ${dateFontSize}px ${font}`;
             ctx.strokeText(dateStr, startX, currentY);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillText(dateStr, startX, currentY);
             currentY += dateFontSize * lineHeight;
 
-            // 2. Time (White with Black Outline)
+            // 2. Time
             ctx.font = `bold ${timeFontSize}px ${font}`;
             ctx.strokeText(timeStr, startX, currentY);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillText(timeStr, startX, currentY);
             currentY += timeFontSize * lineHeight;
             
-            // 3. Title (Colgate Red with White Outline for pop)
+            // 3. Title
             ctx.font = `bold ${titleFontSize}px ${font}`;
-            // Use white stroke for the Red text to make it pop
             ctx.strokeStyle = 'white'; 
-            ctx.lineWidth = w * 0.006; // Thinner white stroke
+            ctx.lineWidth = w * 0.006; 
             ctx.strokeText(titleStr, startX, currentY);
             
             ctx.fillStyle = '#dc2626'; // Colgate Red
             ctx.fillText(titleStr, startX, currentY);
-            // ---------------------------------
-
-            // Convert to Base64
-            capturedImageData = processCanvas.toDataURL('image/png');
-            
-            // Show Preview
-            capturedImagePreview.src = capturedImageData;
-            cameraContainer.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
-            
-            stopCamera();
-        });
+        }
 
         // Retake Photo
-        retakeBtn.addEventListener('click', async () => {
+        retakeBtn.addEventListener('click', () => {
             capturedImageData = null;
+            nativeCameraInput.value = ''; // Reset input
             previewContainer.classList.add('hidden');
-            // Re-open camera
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                cameraFeed.srcObject = stream;
-                cameraContainer.classList.remove('hidden');
-            } catch (err) {
-                cameraTriggerContainer.classList.remove('hidden');
-            }
+            cameraTriggerContainer.classList.remove('hidden');
         });
 
         // IMPORTANT: The URL you provided
@@ -480,8 +436,8 @@
             try {
                 // Use captured image
                 data.shop_image = {
-                    name: `capture_${Date.now()}.png`,
-                    type: 'image/png',
+                    name: `capture_${Date.now()}.jpg`,
+                    type: 'image/jpeg',
                     data: capturedImageData
                 };
             } catch (error) {
@@ -532,10 +488,9 @@
             distSelect.innerHTML = '<option value="" disabled selected>প্রথমে এরিয়া সিলেক্ট করুন</option>';
             
             // Reset Camera UI
-            stopCamera();
             capturedImageData = null;
+            nativeCameraInput.value = '';
             previewContainer.classList.add('hidden');
-            cameraContainer.classList.add('hidden');
             cameraTriggerContainer.classList.remove('hidden');
         }
     </script>
