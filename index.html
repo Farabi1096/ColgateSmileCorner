@@ -80,8 +80,8 @@
                         <select name="display_month" required
                             class="pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 sm:text-sm py-3 transition-all outline-none appearance-none">
                             <option value="" disabled selected>ডিসপ্লের নির্ধারিত মাস সিলেক্ট করুন</option>
-                            <option value="January">January</option>
-                            <option value="February">February</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
@@ -167,19 +167,58 @@
                     <p class="text-xs text-gray-500 mt-1">উদাহরণ: BDC0002362</p>
                 </div>
 
-                <!-- Field 5: Shop Image Upload -->
+                <!-- Field 5: Shop Image Upload & Camera -->
                 <div class="input-group relative">
                     <label class="block text-sm font-semibold text-gray-700 mb-1 transition-colors">
                         ডিসপ্লের ছবি <span class="text-red-500">*</span>
                     </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="image" class="h-5 w-5 text-gray-400 transition-colors"></i>
-                        </div>
-                        <input type="file" id="shop_image" name="shop_image" required accept="image/*"
-                            class="pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 sm:text-sm py-3 transition-all outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                    
+                    <!-- Camera Trigger Button (Visible by default) -->
+                    <div id="cameraTriggerContainer">
+                        <button type="button" id="openCameraBtn" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors group">
+                            <div class="p-3 rounded-full bg-white mb-2 shadow-sm group-hover:scale-110 transition-transform">
+                                <i data-lucide="camera" class="h-8 w-8 text-red-600"></i>
+                            </div>
+                            <span class="text-sm font-bold text-red-700">ক্যামেরা দিয়ে ছবি তুলুন</span>
+                        </button>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">ডিসপ্লের একটি পরিষ্কার ছবি আপলোড করুন।</p>
+
+                    <!-- Camera Container (Hidden by default) -->
+                    <div id="cameraContainer" class="hidden mt-2">
+                        <div class="relative rounded-lg overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full">
+                            <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+                            
+                            <!-- Overlay Text for Preview -->
+                            <div class="absolute bottom-2 left-2 text-white text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
+                                তারিখ, সময় ও লোকেশন যুক্ত হবে
+                            </div>
+
+                            <button type="button" id="captureBtn" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-lg hover:scale-105 transition-transform">
+                                <div class="w-14 h-14 rounded-full border-4 border-red-600 flex items-center justify-center bg-white">
+                                    <div class="w-10 h-10 rounded-full bg-red-600"></div>
+                                </div>
+                            </button>
+                        </div>
+                        <button type="button" id="closeCameraBtn" class="mt-2 text-sm text-red-600 hover:text-red-800 w-full text-center">ক্যামেরা বন্ধ করুন</button>
+                    </div>
+
+                    <!-- Captured Preview Container (Hidden by default) -->
+                    <div id="previewContainer" class="hidden mt-2 relative">
+                        <div class="relative rounded-lg overflow-hidden border border-gray-300">
+                            <img id="capturedImagePreview" class="w-full h-auto block">
+                            <button type="button" id="retakeBtn" class="absolute top-2 right-2 bg-gray-900 bg-opacity-70 text-white rounded-full p-2 hover:bg-opacity-90 transition-all">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-green-600 mt-1 flex items-center">
+                            <i data-lucide="check-circle" class="h-3 w-3 mr-1"></i> ছবি তোলা হয়েছে (তারিখ সহ)
+                        </p>
+                    </div>
+                    
+                    <!-- Hidden Canvas for processing -->
+                    <canvas id="processCanvas" class="hidden"></canvas>
+
+                    <p class="text-xs text-gray-500 mt-1">ডিসপ্লের একটি পরিষ্কার ছবি তুলুন।</p>
                 </div>
 
                 <!-- Submit Button -->
@@ -225,6 +264,21 @@
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         
+        // Camera Elements
+        const openCameraBtn = document.getElementById('openCameraBtn');
+        const closeCameraBtn = document.getElementById('closeCameraBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const cameraTriggerContainer = document.getElementById('cameraTriggerContainer');
+        const cameraContainer = document.getElementById('cameraContainer');
+        const previewContainer = document.getElementById('previewContainer');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const capturedImagePreview = document.getElementById('capturedImagePreview');
+        const processCanvas = document.getElementById('processCanvas');
+
+        let stream = null;
+        let capturedImageData = null; // Stores the Base64 of captured image
+
         // Data for Area to Distribution mapping
         const distributionData = {
             "CTG": [
@@ -253,10 +307,8 @@
             const selectedArea = this.value;
             const distributors = distributionData[selectedArea] || [];
             
-            // Clear existing options
             distSelect.innerHTML = '<option value="" disabled selected>দোকানটি যে ডিস্ট্রিবিউশন এর অধীনে তা সিলেক্ট করুন</option>';
             
-            // Add new options based on area
             distributors.forEach(dist => {
                 const option = document.createElement('option');
                 option.value = dist;
@@ -265,22 +317,155 @@
             });
         });
 
-        // IMPORTANT: Replace this URL with your Google Web App URL after deploying the backend code
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9WuBOgKRgfol24Def7xKGwUHu6zfJPhdpuwqlE58yWgraHM7uXKpJlCmwa4HCKqNW/exec';
+        // --- CAMERA FUNCTIONS ---
 
-        // Helper function to convert file to Base64 string
-        const fileToBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        };
+        // Open Camera
+        openCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } // Prefer back camera
+                });
+                cameraFeed.srcObject = stream;
+                
+                cameraTriggerContainer.classList.add('hidden');
+                cameraContainer.classList.remove('hidden');
+            } catch (err) {
+                console.error("Camera Error:", err);
+                alert("ক্যামেরা ওপেন করা যাচ্ছে না। অনুগ্রহ করে পারমিশন চেক করুন।");
+            }
+        });
+
+        // Close Camera
+        closeCameraBtn.addEventListener('click', () => {
+            stopCamera();
+            cameraContainer.classList.add('hidden');
+            cameraTriggerContainer.classList.remove('hidden');
+        });
+
+        // Stop Camera Stream
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        // Capture Photo
+        captureBtn.addEventListener('click', () => {
+            const ctx = processCanvas.getContext('2d');
+            
+            // Set canvas size to match video resolution
+            processCanvas.width = cameraFeed.videoWidth;
+            processCanvas.height = cameraFeed.videoHeight;
+            
+            // Draw video frame
+            ctx.drawImage(cameraFeed, 0, 0, processCanvas.width, processCanvas.height);
+            
+            // --- CUSTOM TIMESTAMP DESIGN ---
+            const now = new Date();
+            
+            // Date Format: 29-Jan-2026
+            const day = now.getDate();
+            const month = now.toLocaleString('en-US', { month: 'short' });
+            const year = now.getFullYear();
+            const dateStr = `${day}-${month}-${year}`;
+
+            // Time Format: 11:30 AM
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); 
+            
+            // CHANGED TITLE HERE
+            const titleStr = "Colgate Smile Corner";
+            
+            // Dimensions relative to image size
+            const w = processCanvas.width;
+            const h = processCanvas.height;
+            const padding = w * 0.015; // Even smaller padding
+            
+            // Font Sizes (Significantly reduced "More Little")
+            const dateFontSize = w * 0.025;
+            const timeFontSize = w * 0.025;
+            const titleFontSize = w * 0.028;
+            
+            // Font Family
+            const font = "sans-serif";
+            
+            // Calculate Position
+            const lineHeight = 1.3;
+            const totalTextHeight = (dateFontSize + timeFontSize + titleFontSize) * lineHeight;
+            
+            // Box Position (Bottom Left with margin)
+            const margin = w * 0.02;
+            const startX = margin + padding;
+            let currentY = h - totalTextHeight - margin;
+            
+            // Set Stroke (Outline) - Thinner for smaller text
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = w * 0.004; // Thinner stroke
+            ctx.lineJoin = 'round';
+            ctx.textBaseline = 'top';
+
+            // 1. Date (White with Black Outline)
+            ctx.font = `bold ${dateFontSize}px ${font}`;
+            ctx.strokeText(dateStr, startX, currentY);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(dateStr, startX, currentY);
+            currentY += dateFontSize * lineHeight;
+
+            // 2. Time (White with Black Outline)
+            ctx.font = `bold ${timeFontSize}px ${font}`;
+            ctx.strokeText(timeStr, startX, currentY);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(timeStr, startX, currentY);
+            currentY += timeFontSize * lineHeight;
+            
+            // 3. Title (Colgate Red with White Outline for pop)
+            ctx.font = `bold ${titleFontSize}px ${font}`;
+            // Use white stroke for the Red text to make it pop
+            ctx.strokeStyle = 'white'; 
+            ctx.lineWidth = w * 0.006; // Thinner white stroke
+            ctx.strokeText(titleStr, startX, currentY);
+            
+            ctx.fillStyle = '#dc2626'; // Colgate Red
+            ctx.fillText(titleStr, startX, currentY);
+            // ---------------------------------
+
+            // Convert to Base64
+            capturedImageData = processCanvas.toDataURL('image/png');
+            
+            // Show Preview
+            capturedImagePreview.src = capturedImageData;
+            cameraContainer.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            
+            stopCamera();
+        });
+
+        // Retake Photo
+        retakeBtn.addEventListener('click', async () => {
+            capturedImageData = null;
+            previewContainer.classList.add('hidden');
+            // Re-open camera
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                cameraFeed.srcObject = stream;
+                cameraContainer.classList.remove('hidden');
+            } catch (err) {
+                cameraTriggerContainer.classList.remove('hidden');
+            }
+        });
+
+        // IMPORTANT: The URL you provided
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9WuBOgKRgfol24Def7xKGwUHu6zfJPhdpuwqlE58yWgraHM7uXKpJlCmwa4HCKqNW/exec';
 
         form.addEventListener('submit', async e => {
             e.preventDefault();
             
+            // Validation: Check if image is captured
+            if (!capturedImageData) {
+                alert("অনুগ্রহ করে ক্যামেরা দিয়ে ছবি তুলুন।");
+                return;
+            }
+
             // UI Loading State
             btnText.classList.add('hidden');
             btnLoader.classList.remove('hidden');
@@ -291,24 +476,18 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            // Handle File Upload process
-            const fileInput = document.getElementById('shop_image');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                try {
-                    // Convert file to Base64 before sending
-                    const base64File = await fileToBase64(file);
-                    // Replace the file object with the image data structure
-                    data.shop_image = {
-                        name: file.name,
-                        type: file.type,
-                        data: base64File
-                    };
-                } catch (error) {
-                    console.error("Error converting file:", error);
-                    showError();
-                    return; // Stop submission if file conversion fails
-                }
+            // Handle Image Data
+            try {
+                // Use captured image
+                data.shop_image = {
+                    name: `capture_${Date.now()}.png`,
+                    type: 'image/png',
+                    data: capturedImageData
+                };
+            } catch (error) {
+                console.error("Error processing image:", error);
+                showError();
+                return;
             }
 
             // --- REAL SUBMISSION MODE ---
@@ -351,9 +530,14 @@
             
             // Reset dropdowns
             distSelect.innerHTML = '<option value="" disabled selected>প্রথমে এরিয়া সিলেক্ট করুন</option>';
+            
+            // Reset Camera UI
+            stopCamera();
+            capturedImageData = null;
+            previewContainer.classList.add('hidden');
+            cameraContainer.classList.add('hidden');
+            cameraTriggerContainer.classList.remove('hidden');
         }
     </script>
 </body>
 </html>
-
-
