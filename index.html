@@ -228,6 +228,14 @@
                             <div class="relative rounded-2xl overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full flex items-center justify-center shadow-inner">
                                 <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
 
+                                <!-- LIVE LOCATION BADGE -->
+                                <div class="absolute top-3 inset-x-0 flex justify-center z-20 pointer-events-none px-4">
+                                    <div class="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-1.5 max-w-full">
+                                        <i data-lucide="map-pin" class="h-3.5 w-3.5 text-colgate flex-shrink-0"></i>
+                                        <span id="cameraLocationBadge" class="text-white text-[11px] sm:text-xs font-medium truncate">লোকেশন খোঁজা হচ্ছে...</span>
+                                    </div>
+                                </div>
+
                                 <!-- Capture Button Area (Centered at the bottom) -->
                                 <div class="absolute inset-x-0 bottom-6 flex justify-center z-20 pointer-events-none">
                                     <button type="button" id="captureBtn" class="bg-white rounded-full p-1 shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-transform hover:scale-110 pointer-events-auto animate-subtle-pulse">
@@ -326,6 +334,7 @@
         
         // GPS Location variable
         let capturedLocation = "Location not found";
+        let locationPromise = null;
 
         const distributionData = {
             "CTG": ["Next Associates", "ARC Trading", "M/S Farid Enterprise", "P M Traders", "Madina Traders"],
@@ -347,34 +356,46 @@
             });
         });
 
-        // Function to fetch GPS Location
+        // Function to fetch GPS Location (Returns a Promise)
         function fetchLocation() {
             capturedLocation = "Fetching Location...";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    try {
-                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-                        const data = await res.json();
-                        let locStr = "";
-                        if(data.locality) locStr += data.locality;
-                        if(data.city && data.city !== data.locality) {
-                            if(locStr) locStr += ", ";
-                            locStr += data.city;
+            const badge = document.getElementById('cameraLocationBadge');
+            if (badge) badge.textContent = "লোকেশন খোঁজা হচ্ছে...";
+
+            locationPromise = new Promise((resolve) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        try {
+                            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                            const data = await res.json();
+                            let locStr = "";
+                            if(data.locality) locStr += data.locality;
+                            if(data.city && data.city !== data.locality) {
+                                if(locStr) locStr += ", ";
+                                locStr += data.city;
+                            }
+                            if(!locStr && data.principalSubdivision) locStr = data.principalSubdivision;
+                            
+                            capturedLocation = locStr || "Unknown Area";
+                        } catch (e) {
+                            capturedLocation = "Location Unavailable";
                         }
-                        if(!locStr && data.principalSubdivision) locStr = data.principalSubdivision;
-                        
-                        capturedLocation = locStr || "Unknown Area";
-                    } catch (e) {
-                        capturedLocation = "Location Unavailable";
-                    }
-                }, (error) => {
-                    capturedLocation = "Location Access Denied";
-                });
-            } else {
-                capturedLocation = "GPS Not Supported";
-            }
+                        if (badge) badge.textContent = capturedLocation;
+                        resolve(capturedLocation);
+                    }, (error) => {
+                        capturedLocation = "Location Access Denied";
+                        if (badge) badge.textContent = "লোকেশন পারমিশন নেই";
+                        resolve(capturedLocation);
+                    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
+                } else {
+                    capturedLocation = "GPS Not Supported";
+                    if (badge) badge.textContent = "GPS সাপোর্ট করে না";
+                    resolve(capturedLocation);
+                }
+            });
+            return locationPromise;
         }
 
         // --- IN-BROWSER CAMERA ---
@@ -411,8 +432,14 @@
 
         // --- CAPTURE PROCESS ---
 
-        captureBtn.addEventListener('click', () => {
+        captureBtn.addEventListener('click', async () => {
             captureBtn.classList.remove('animate-subtle-pulse');
+            captureBtn.style.pointerEvents = 'none'; // Disable double clicks
+            
+            // Wait for location to finish if it's still fetching
+            if (capturedLocation === "Fetching Location..." && locationPromise) {
+                await locationPromise;
+            }
             
             const flashOverlay = document.createElement('div');
             flashOverlay.className = 'absolute inset-0 bg-white opacity-70 z-10 transition-opacity duration-150';
@@ -460,6 +487,7 @@
                 
                 cameraContainer.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
+                captureBtn.style.pointerEvents = 'auto'; // Restore pointer events
             }, 150);
         });
 
@@ -475,7 +503,12 @@
                 const img = new Image();
                 const objectUrl = URL.createObjectURL(file);
                 
-                img.onload = () => {
+                img.onload = async () => {
+                    // Wait for location to finish if it's still fetching
+                    if (capturedLocation === "Fetching Location..." && locationPromise) {
+                        await locationPromise;
+                    }
+
                     const ctx = processCanvas.getContext('2d');
                     processCanvas.width = img.width;
                     processCanvas.height = img.height;
