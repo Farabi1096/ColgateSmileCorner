@@ -320,85 +320,38 @@
 
             <!-- ================= VIEW 2: REPORT ================= -->
             <div id="reportView" class="hidden animate-fade-in">
-                <!-- Overall Performance Card -->
-                <div class="bg-colgate/5 border border-red-100 p-5 rounded-2xl shadow-sm mb-5 text-center relative overflow-hidden">
-                    <i data-lucide="trending-up" class="absolute -right-4 -top-4 h-24 w-24 text-red-100 opacity-50"></i>
-                    <h3 class="text-colgate font-bold text-sm mb-1 relative z-10">আপনার টার্গেট অর্জন (নভেম্বর)</h3>
-                    <div class="text-4xl font-extrabold text-gray-800 relative z-10 mt-2">৬৪<span class="text-lg text-gray-500 font-medium">%</span></div>
-                    
-                    <div class="mt-5 mb-2 bg-red-100 rounded-full h-2 w-full overflow-hidden relative z-10">
-                        <div class="bg-colgate h-2 rounded-full" style="width: 64%"></div>
-                    </div>
-                    
-                    <div class="flex justify-between mt-3 text-[13px] font-semibold relative z-10">
-                        <div class="flex flex-col items-start">
-                            <span class="text-gray-500 text-[11px]">মোট টার্গেট</span>
-                            <span class="text-gray-800">৫০ টি</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-gray-500 text-[11px]">সম্পন্ন হয়েছে</span>
-                            <span class="text-green-600">৩২ টি</span>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <span class="text-gray-500 text-[11px]">বাকি আছে</span>
-                            <span class="text-colgate">১৮ টি</span>
-                        </div>
+                <!-- Filters Section -->
+                <div class="bg-gray-50 border border-gray-100 p-4 rounded-2xl shadow-sm mb-4">
+                    <h3 class="text-[15px] font-bold text-gray-800 mb-3 flex items-center">
+                        <i data-lucide="filter" class="h-[18px] w-[18px] mr-1.5 text-colgate"></i> পারফরম্যান্স ফিল্টার
+                    </h3>
+                    <div class="space-y-3">
+                        <select id="reportZoneSelect" class="w-full rounded-xl border border-gray-200 bg-white text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-700">
+                            <option value="">Zone সিলেক্ট করুন</option>
+                        </select>
+                        <select id="reportDhSelect" class="w-full rounded-xl border border-gray-200 bg-gray-100 text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-500" disabled>
+                            <option value="">প্রথমে Zone সিলেক্ট করুন</option>
+                        </select>
+                        <select id="reportRouteSelect" class="w-full rounded-xl border border-gray-200 bg-gray-100 text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-500" disabled>
+                            <option value="">প্রথমে DH Name সিলেক্ট করুন</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Recent Submissions List -->
+                <!-- Results Section -->
                 <div>
-                    <h4 class="font-bold text-gray-700 mt-2 mb-3 px-1 text-[15px] flex items-center">
-                        <i data-lucide="clock" class="h-4 w-4 mr-1.5 text-gray-400"></i> সাম্প্রতিক আপলোড
+                    <h4 class="font-bold text-gray-700 mt-2 mb-3 px-1 text-[15px] flex items-center justify-between">
+                        <span class="flex items-center"><i data-lucide="bar-chart" class="h-4 w-4 mr-1.5 text-gray-400"></i> আউটলেট রিপোর্ট</span>
+                        <span id="reportCount" class="bg-red-50 text-colgate px-2 py-0.5 rounded-full text-[11px] font-bold">0</span>
                     </h4>
                     
-                    <div class="space-y-3">
-                        <!-- Dummy Item 1 -->
-                        <div class="bg-white border border-gray-100 p-3.5 rounded-xl shadow-sm flex justify-between items-center hover:border-red-200 transition-colors">
-                            <div class="flex items-center">
-                                <div class="bg-green-50 h-10 w-10 rounded-lg flex items-center justify-center mr-3">
-                                    <i data-lucide="image" class="h-5 w-5 text-green-500"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-[14px] text-gray-800">BDC001245</div>
-                                    <div class="text-[11px] text-gray-500 mt-0.5">Gulshan 1, Dhaka • আজ, ১২:৩০ PM</div>
-                                </div>
-                            </div>
-                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Approved</span>
-                        </div>
-                        
-                        <!-- Dummy Item 2 -->
-                        <div class="bg-white border border-gray-100 p-3.5 rounded-xl shadow-sm flex justify-between items-center hover:border-red-200 transition-colors">
-                            <div class="flex items-center">
-                                <div class="bg-yellow-50 h-10 w-10 rounded-lg flex items-center justify-center mr-3">
-                                    <i data-lucide="image" class="h-5 w-5 text-yellow-500"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-[14px] text-gray-800">BDC008731</div>
-                                    <div class="text-[11px] text-gray-500 mt-0.5">Tejgaon, Dhaka • আজ, ১১:১৫ AM</div>
-                                </div>
-                            </div>
-                            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pending</span>
-                        </div>
-
-                        <!-- Dummy Item 3 -->
-                        <div class="bg-white border border-gray-100 p-3.5 rounded-xl shadow-sm flex justify-between items-center hover:border-red-200 transition-colors">
-                            <div class="flex items-center">
-                                <div class="bg-green-50 h-10 w-10 rounded-lg flex items-center justify-center mr-3">
-                                    <i data-lucide="image" class="h-5 w-5 text-green-500"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-[14px] text-gray-800">BDC005522</div>
-                                    <div class="text-[11px] text-gray-500 mt-0.5">Banani, Dhaka • গতকাল, ০৪:৪৫ PM</div>
-                                </div>
-                            </div>
-                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Approved</span>
+                    <div id="reportResults" class="space-y-3 pb-4">
+                        <!-- Default Message -->
+                        <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-200">
+                            <i data-lucide="search" class="h-8 w-8 text-gray-300 mx-auto mb-2"></i>
+                            <p class="text-[13px] text-gray-500 font-medium">উপরের ফিল্টার থেকে তথ্য সিলেক্ট করুন</p>
                         </div>
                     </div>
-                    
-                    <button class="w-full mt-4 py-2.5 text-[13px] font-bold text-colgate bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
-                        সবগুলো দেখুন
-                    </button>
                 </div>
             </div>
 
@@ -413,6 +366,13 @@
     <script>
         lucide.createIcons();
 
+        // --- DUMMY REPORT DATA ---
+        const reportData = [
+            { zone: "DHAKA", dhName: "Takwa Enterprise", code: "BDC0002916", name: "Glob Pharmacy-1", route: "SCHOOL ROAD", target: "5,500", achieved: "5,819", achPercent: 105.8, balance: "-319", eligible: "Y", payout: "400" },
+            { zone: "DHAKA", dhName: "Unitrust Trading Co.", code: "BDC0025096", name: "Laz farma", route: "FOKIRAPUL 1", target: "5,500", achieved: "1,168", achPercent: 21.2, balance: "4,332", eligible: "N", payout: "0" },
+            { zone: "DHAKA", dhName: "Paragon Marketing Limited", code: "BDC0019129", name: "Saha General Store", route: "MATIKATA", target: "5,500", achieved: "6,851", achPercent: 124.6, balance: "-1,351", eligible: "Y", payout: "400" }
+        ];
+
         // --- TAB SWITCHING LOGIC ---
         const tabForm = document.getElementById('tabForm');
         const tabReport = document.getElementById('tabReport');
@@ -420,32 +380,168 @@
         const reportView = document.getElementById('reportView');
 
         tabForm.addEventListener('click', () => {
-            // Update Active Tab Style
             tabForm.classList.add('bg-white', 'shadow-sm', 'text-colgate');
             tabForm.classList.remove('text-gray-500', 'hover:text-gray-700');
-            
-            // Update Inactive Tab Style
             tabReport.classList.remove('bg-white', 'shadow-sm', 'text-colgate');
             tabReport.classList.add('text-gray-500', 'hover:text-gray-700');
-            
-            // Toggle Views
             formView.classList.remove('hidden');
             reportView.classList.add('hidden');
         });
 
         tabReport.addEventListener('click', () => {
-            // Update Active Tab Style
             tabReport.classList.add('bg-white', 'shadow-sm', 'text-colgate');
             tabReport.classList.remove('text-gray-500', 'hover:text-gray-700');
-            
-            // Update Inactive Tab Style
             tabForm.classList.remove('bg-white', 'shadow-sm', 'text-colgate');
             tabForm.classList.add('text-gray-500', 'hover:text-gray-700');
-            
-            // Toggle Views
             reportView.classList.remove('hidden');
             formView.classList.add('hidden');
+            initReportFilters(); // Initialize filters when tab is opened
         });
+
+        // --- REPORT FILTER LOGIC ---
+        const reportZoneSelect = document.getElementById('reportZoneSelect');
+        const reportDhSelect = document.getElementById('reportDhSelect');
+        const reportRouteSelect = document.getElementById('reportRouteSelect');
+        const reportResults = document.getElementById('reportResults');
+        const reportCount = document.getElementById('reportCount');
+        let reportInitialized = false;
+
+        function initReportFilters() {
+            if(reportInitialized) return;
+            
+            // Populate Zones
+            const zones = [...new Set(reportData.map(item => item.zone))];
+            zones.forEach(zone => {
+                reportZoneSelect.innerHTML += `<option value="${zone}">${zone}</option>`;
+            });
+            reportInitialized = true;
+        }
+
+        reportZoneSelect.addEventListener('change', () => {
+            const selectedZone = reportZoneSelect.value;
+            
+            // Reset DH and Route
+            reportDhSelect.innerHTML = '<option value="">DH Name সিলেক্ট করুন</option>';
+            reportRouteSelect.innerHTML = '<option value="">প্রথমে DH Name সিলেক্ট করুন</option>';
+            reportRouteSelect.disabled = true;
+            reportRouteSelect.classList.replace('bg-white', 'bg-gray-100');
+            reportRouteSelect.classList.replace('text-gray-700', 'text-gray-500');
+
+            if (selectedZone) {
+                const dhs = [...new Set(reportData.filter(i => i.zone === selectedZone).map(i => i.dhName))];
+                reportDhSelect.disabled = false;
+                reportDhSelect.classList.replace('bg-gray-100', 'bg-white');
+                reportDhSelect.classList.replace('text-gray-500', 'text-gray-700');
+                dhs.forEach(dh => reportDhSelect.innerHTML += `<option value="${dh}">${dh}</option>`);
+            } else {
+                reportDhSelect.disabled = true;
+                reportDhSelect.classList.replace('bg-white', 'bg-gray-100');
+                reportDhSelect.classList.replace('text-gray-700', 'text-gray-500');
+            }
+            renderReport();
+        });
+
+        reportDhSelect.addEventListener('change', () => {
+            const selectedDH = reportDhSelect.value;
+            
+            // Reset Route
+            reportRouteSelect.innerHTML = '<option value="">Route Name সিলেক্ট করুন</option>';
+
+            if (selectedDH) {
+                const routes = [...new Set(reportData.filter(i => i.dhName === selectedDH).map(i => i.route))];
+                reportRouteSelect.disabled = false;
+                reportRouteSelect.classList.replace('bg-gray-100', 'bg-white');
+                reportRouteSelect.classList.replace('text-gray-500', 'text-gray-700');
+                routes.forEach(route => reportRouteSelect.innerHTML += `<option value="${route}">${route}</option>`);
+            } else {
+                reportRouteSelect.disabled = true;
+                reportRouteSelect.classList.replace('bg-white', 'bg-gray-100');
+                reportRouteSelect.classList.replace('text-gray-700', 'text-gray-500');
+            }
+            renderReport();
+        });
+
+        reportRouteSelect.addEventListener('change', renderReport);
+
+        function renderReport() {
+            const z = reportZoneSelect.value;
+            const dh = reportDhSelect.value;
+            const r = reportRouteSelect.value;
+
+            // Don't show anything if nothing is selected
+            if (!z && !dh && !r) {
+                reportResults.innerHTML = `
+                    <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-200">
+                        <i data-lucide="search" class="h-8 w-8 text-gray-300 mx-auto mb-2"></i>
+                        <p class="text-[13px] text-gray-500 font-medium">উপরের ফিল্টার থেকে তথ্য সিলেক্ট করুন</p>
+                    </div>`;
+                reportCount.textContent = "0";
+                lucide.createIcons();
+                return;
+            }
+
+            let filtered = reportData;
+            if(z) filtered = filtered.filter(i => i.zone === z);
+            if(dh) filtered = filtered.filter(i => i.dhName === dh);
+            if(r) filtered = filtered.filter(i => i.route === r);
+
+            reportCount.textContent = filtered.length;
+            reportResults.innerHTML = '';
+
+            if(filtered.length === 0) {
+                reportResults.innerHTML = `
+                    <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-200">
+                        <i data-lucide="alert-circle" class="h-8 w-8 text-gray-300 mx-auto mb-2"></i>
+                        <p class="text-[13px] text-gray-500 font-medium">কোনো আউটলেট পাওয়া যায়নি</p>
+                    </div>`;
+            } else {
+                filtered.forEach(item => {
+                    const isEligible = item.eligible === 'Y';
+                    const progressColor = item.achPercent >= 100 ? 'bg-green-500' : 'bg-colgate';
+                    const achColor = item.achPercent >= 100 ? 'text-green-600' : 'text-colgate';
+                    const badgeClass = isEligible 
+                        ? 'bg-green-100 text-green-700 border-green-200' 
+                        : 'bg-red-50 text-red-600 border-red-100';
+
+                    const cardHTML = `
+                        <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:border-red-200 transition-colors animate-fade-in">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="font-bold text-[14px] text-gray-800 leading-tight">${item.name}</h4>
+                                    <p class="text-[11px] text-gray-500 font-medium mt-0.5">${item.code} • ${item.route}</p>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeClass} uppercase tracking-wider flex-shrink-0">
+                                    Payout: ${isEligible ? 'Yes' : 'No'}
+                                </span>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <div class="flex justify-between text-[11px] font-bold text-gray-600 mb-1.5">
+                                    <span>Target: ${item.target}</span>
+                                    <span class="${achColor}">Achieved: ${item.achPercent}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-3 overflow-hidden">
+                                    <div class="${progressColor} h-1.5 rounded-full transition-all duration-1000" style="width: ${Math.min(item.achPercent, 100)}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center pt-2 border-t border-gray-200/80">
+                                    <div class="text-[11px] flex flex-col">
+                                        <span class="text-gray-400 font-medium">Balance</span> 
+                                        <span class="font-bold text-gray-800">${item.balance}</span>
+                                    </div>
+                                    <div class="text-[12px] flex flex-col items-end">
+                                        <span class="text-gray-400 font-medium">Payout (TK)</span> 
+                                        <span class="font-extrabold ${isEligible ? 'text-green-600' : 'text-gray-400'}">৳${item.payout}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    reportResults.innerHTML += cardHTML;
+                });
+            }
+            lucide.createIcons();
+        }
 
         // --- FORM LOGIC ---
         const form = document.getElementById('customForm');
@@ -478,7 +574,7 @@
         let capturedLocation = "Location not found";
         let locationPromise = null;
 
-        const distributionData = {
+        const distributionDataForm = {
             "CTG": ["Next Associates", "ARC Trading", "M/S Farid Enterprise", "P M Traders", "Madina Traders"],
             "DHAKA": ["Takwa Enterprise", "Unitrust Trading Co.", "Paragon Marketing Limited", "Self Tech Marketing Ltd", "M/S Sanuar Enterprise", "M/S Hasan Brothers Corporation", "M/S Hasan Brothers Corporation 2"]
         };
@@ -488,7 +584,7 @@
 
         areaSelect.addEventListener('change', function() {
             const selectedArea = this.value;
-            const distributors = distributionData[selectedArea] || [];
+            const distributors = distributionDataForm[selectedArea] || [];
             distSelect.innerHTML = '<option value="" disabled selected>প্রথমে এরিয়া সিলেক্ট করুন</option>';
             distributors.forEach(dist => {
                 const option = document.createElement('option');
