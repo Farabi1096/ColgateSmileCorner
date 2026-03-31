@@ -359,8 +359,11 @@
                             <i data-lucide="filter" class="h-[18px] w-[18px] mr-1.5 text-colgate"></i> পারফরম্যান্স ফিল্টার
                         </h3>
                         <div class="space-y-3">
-                            <select id="reportZoneSelect" class="w-full rounded-xl border border-gray-200 bg-white text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-700">
-                                <option value="">Zone সিলেক্ট করুন</option>
+                            <select id="reportMonthSelect" class="w-full rounded-xl border border-gray-200 bg-white text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-700">
+                                <option value="">Month সিলেক্ট করুন</option>
+                            </select>
+                            <select id="reportZoneSelect" class="w-full rounded-xl border border-gray-200 bg-gray-100 text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-500" disabled>
+                                <option value="">প্রথমে Month সিলেক্ট করুন</option>
                             </select>
                             <select id="reportDhSelect" class="w-full rounded-xl border border-gray-200 bg-gray-100 text-[13px] py-2.5 px-3 outline-none focus:border-colgate font-medium text-gray-500" disabled>
                                 <option value="">প্রথমে Zone সিলেক্ট করুন</option>
@@ -398,6 +401,9 @@
     </div>
 
     <script>
+        // --- DISABLE RIGHT CLICK ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
         lucide.createIcons();
 
         // --- FETCH REPORT DATA DIRECTLY FROM GOOGLE SHEETS ---
@@ -426,8 +432,8 @@
                     const getVal = (colIdx) => row.c[colIdx] ? row.c[colIdx].v : "";
                     const getFormatted = (colIdx) => row.c[colIdx] && row.c[colIdx].f ? row.c[colIdx].f : getVal(colIdx);
                     
-                    let achPercentRaw = getVal(9);
-                    let achPercentStr = getFormatted(9);
+                    let achPercentRaw = getVal(10);
+                    let achPercentStr = getFormatted(10);
                     let achPercent = 0;
                     if(typeof achPercentRaw === 'number') {
                         achPercent = parseFloat((achPercentRaw * 100).toFixed(1));
@@ -436,21 +442,23 @@
                     }
 
                     return {
-                        zone: getVal(0),
-                        dhName: getVal(1),
-                        code: getVal(2),
-                        name: getVal(3),
-                        route: getVal(4),
-                        slab: getVal(5),
-                        month: getVal(6),
-                        target: getFormatted(7),
-                        achieved: getFormatted(8),
+                        month: getVal(0),
+                        zone: getVal(1),
+                        dhName: getVal(2),
+                        code: getVal(3),
+                        name: getVal(4),
+                        route: getVal(5),
+                        slab: getVal(6),
+                        monthEnrolled: getVal(7),
+                        target: getFormatted(8),
+                        achieved: getFormatted(9),
                         achPercent: achPercent,
-                        balance: getFormatted(10),
-                        eligible: getVal(11),
-                        payout: getFormatted(12)
+                        balance: getFormatted(11),
+                        eligible: getVal(12),
+                        imageUpload: getVal(13),
+                        payout: getFormatted(14)
                     };
-                }).filter(item => item.zone && item.zone.toUpperCase() !== "ZONE"); 
+                }).filter(item => item.month && item.month.toUpperCase() !== "MONTH"); 
                 
                 return parsedData;
             } catch (error) {
@@ -500,6 +508,7 @@
         });
 
         // --- REPORT FILTER LOGIC ---
+        const reportMonthSelect = document.getElementById('reportMonthSelect');
         const reportZoneSelect = document.getElementById('reportZoneSelect');
         const reportDhSelect = document.getElementById('reportDhSelect');
         const reportRouteSelect = document.getElementById('reportRouteSelect');
@@ -508,25 +517,65 @@
 
         // Optimizing DOM updates by building HTML string first
         function initReportFilters() {
-            let zoneHtml = '<option value="">Zone সিলেক্ট করুন</option>';
-            const zones = [...new Set(reportData.map(item => item.zone))];
-            zones.forEach(zone => {
-                zoneHtml += `<option value="${zone}">${zone}</option>`;
+            let monthHtml = '<option value="">Month সিলেক্ট করুন</option>';
+            const months = [...new Set(reportData.map(item => item.month))].filter(Boolean);
+            months.forEach(m => {
+                monthHtml += `<option value="${m}">${m}</option>`;
             });
-            reportZoneSelect.innerHTML = zoneHtml;
+            reportMonthSelect.innerHTML = monthHtml;
         }
 
+        reportMonthSelect.addEventListener('change', () => {
+            const selectedMonth = reportMonthSelect.value;
+            
+            // Reset Zone, DH and Route completely
+            reportZoneSelect.innerHTML = '<option value="">Zone সিলেক্ট করুন</option>';
+            reportDhSelect.innerHTML = '<option value="">প্রথমে Zone সিলেক্ট করুন</option>';
+            reportRouteSelect.innerHTML = '<option value="">প্রথমে DH Name সিলেক্ট করুন</option>';
+            
+            reportZoneSelect.disabled = true;
+            reportDhSelect.disabled = true;
+            reportRouteSelect.disabled = true;
+            
+            reportZoneSelect.classList.replace('bg-white', 'bg-gray-100');
+            reportZoneSelect.classList.replace('text-gray-700', 'text-gray-500');
+            reportDhSelect.classList.replace('bg-white', 'bg-gray-100');
+            reportDhSelect.classList.replace('text-gray-700', 'text-gray-500');
+            reportRouteSelect.classList.replace('bg-white', 'bg-gray-100');
+            reportRouteSelect.classList.replace('text-gray-700', 'text-gray-500');
+
+            if (selectedMonth) {
+                const zones = [...new Set(reportData.filter(i => i.month === selectedMonth).map(i => i.zone))].filter(Boolean);
+                reportZoneSelect.disabled = false;
+                reportZoneSelect.classList.replace('bg-gray-100', 'bg-white');
+                reportZoneSelect.classList.replace('text-gray-500', 'text-gray-700');
+                
+                let zoneHtml = '<option value="">Zone সিলেক্ট করুন</option>';
+                zones.forEach(z => zoneHtml += `<option value="${z}">${z}</option>`);
+                reportZoneSelect.innerHTML = zoneHtml;
+            } else {
+                reportZoneSelect.innerHTML = '<option value="">প্রথমে Month সিলেক্ট করুন</option>';
+            }
+            prepareReportRender();
+        });
+
         reportZoneSelect.addEventListener('change', () => {
+            const selectedMonth = reportMonthSelect.value;
             const selectedZone = reportZoneSelect.value;
             
-            // Reset Route completely
+            // Reset DH and Route completely
+            reportDhSelect.innerHTML = '<option value="">প্রথমে Zone সিলেক্ট করুন</option>';
             reportRouteSelect.innerHTML = '<option value="">প্রথমে DH Name সিলেক্ট করুন</option>';
+            reportDhSelect.disabled = true;
             reportRouteSelect.disabled = true;
+            
+            reportDhSelect.classList.replace('bg-white', 'bg-gray-100');
+            reportDhSelect.classList.replace('text-gray-700', 'text-gray-500');
             reportRouteSelect.classList.replace('bg-white', 'bg-gray-100');
             reportRouteSelect.classList.replace('text-gray-700', 'text-gray-500');
 
             if (selectedZone) {
-                const dhs = [...new Set(reportData.filter(i => i.zone === selectedZone).map(i => i.dhName))];
+                const dhs = [...new Set(reportData.filter(i => i.month === selectedMonth && i.zone === selectedZone).map(i => i.dhName))].filter(Boolean);
                 reportDhSelect.disabled = false;
                 reportDhSelect.classList.replace('bg-gray-100', 'bg-white');
                 reportDhSelect.classList.replace('text-gray-500', 'text-gray-700');
@@ -536,18 +585,17 @@
                 reportDhSelect.innerHTML = dhHtml;
             } else {
                 reportDhSelect.innerHTML = '<option value="">DH Name সিলেক্ট করুন</option>';
-                reportDhSelect.disabled = true;
-                reportDhSelect.classList.replace('bg-white', 'bg-gray-100');
-                reportDhSelect.classList.replace('text-gray-700', 'text-gray-500');
             }
             prepareReportRender();
         });
 
         reportDhSelect.addEventListener('change', () => {
+            const selectedMonth = reportMonthSelect.value;
+            const selectedZone = reportZoneSelect.value;
             const selectedDH = reportDhSelect.value;
             
             if (selectedDH) {
-                const routes = [...new Set(reportData.filter(i => i.dhName === selectedDH).map(i => i.route))];
+                const routes = [...new Set(reportData.filter(i => i.month === selectedMonth && i.zone === selectedZone && i.dhName === selectedDH).map(i => i.route))].filter(Boolean);
                 reportRouteSelect.disabled = false;
                 reportRouteSelect.classList.replace('bg-gray-100', 'bg-white');
                 reportRouteSelect.classList.replace('text-gray-500', 'text-gray-700');
@@ -596,11 +644,12 @@
 
         // Setup the data before rendering to handle large data smoothly
         function prepareReportRender() {
+            const m = reportMonthSelect.value;
             const z = reportZoneSelect.value;
             const dh = reportDhSelect.value;
             const r = reportRouteSelect.value;
 
-            if (!z && !dh && !r) {
+            if (!m && !z && !dh && !r) {
                 reportResults.innerHTML = `
                     <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-200">
                         <i data-lucide="search" class="h-8 w-8 text-gray-300 mx-auto mb-2"></i>
@@ -614,9 +663,13 @@
 
             // Filter data quickly
             currentFilteredData = reportData;
+            if(m) currentFilteredData = currentFilteredData.filter(i => i.month === m);
             if(z) currentFilteredData = currentFilteredData.filter(i => i.zone === z);
             if(dh) currentFilteredData = currentFilteredData.filter(i => i.dhName === dh);
             if(r) currentFilteredData = currentFilteredData.filter(i => i.route === r);
+
+            // Sort the filtered data by achPercent in descending order (highest first)
+            currentFilteredData.sort((a, b) => b.achPercent - a.achPercent);
 
             reportCount.textContent = currentFilteredData.length;
             updateOverallPerformance(currentFilteredData);
@@ -651,11 +704,17 @@
 
             batch.forEach(item => {
                 const isEligible = item.eligible && item.eligible.toUpperCase() === 'Y';
+                const hasImage = item.imageUpload && item.imageUpload.toUpperCase() === 'Y';
+                
                 const progressColor = item.achPercent >= 100 ? 'bg-green-500' : 'bg-colgate';
                 const achColor = item.achPercent >= 100 ? 'text-green-600' : 'text-colgate';
                 const badgeClass = isEligible 
                     ? 'bg-green-100 text-green-700 border-green-200' 
                     : 'bg-red-50 text-red-600 border-red-100';
+
+                const imageBadgeHtml = hasImage 
+                    ? '<span class="text-[9px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-bold flex items-center border border-blue-100"><i data-lucide="image" class="h-2.5 w-2.5 mr-0.5"></i> Img Uploaded</span>'
+                    : '<span class="text-[9px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded font-bold flex items-center border border-gray-200"><i data-lucide="image-off" class="h-2.5 w-2.5 mr-0.5"></i> No Image</span>';
 
                 htmlStr += `
                     <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:border-red-200 transition-colors animate-fade-in">
@@ -664,9 +723,12 @@
                                 <h4 class="font-bold text-[14px] text-gray-800 leading-tight">${item.name}</h4>
                                 <p class="text-[11px] text-gray-500 font-medium mt-0.5">${item.code} • ${item.route}</p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeClass} uppercase tracking-wider flex-shrink-0">
-                                Payout: ${isEligible ? 'Yes' : 'No'}
-                            </span>
+                            <div class="flex flex-col items-end gap-1.5">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeClass} uppercase tracking-wider flex-shrink-0">
+                                    Payout: ${isEligible ? 'Yes' : 'No'}
+                                </span>
+                                ${imageBadgeHtml}
+                            </div>
                         </div>
                         
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
