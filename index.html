@@ -323,6 +323,9 @@
 
         let stream = null;
         let capturedImageData = null;
+        
+        // GPS Location variable
+        let capturedLocation = "Location not found";
 
         const distributionData = {
             "CTG": ["Next Associates", "ARC Trading", "M/S Farid Enterprise", "P M Traders", "Madina Traders"],
@@ -344,9 +347,40 @@
             });
         });
 
+        // Function to fetch GPS Location
+        function fetchLocation() {
+            capturedLocation = "Fetching Location...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    try {
+                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                        const data = await res.json();
+                        let locStr = "";
+                        if(data.locality) locStr += data.locality;
+                        if(data.city && data.city !== data.locality) {
+                            if(locStr) locStr += ", ";
+                            locStr += data.city;
+                        }
+                        if(!locStr && data.principalSubdivision) locStr = data.principalSubdivision;
+                        
+                        capturedLocation = locStr || "Unknown Area";
+                    } catch (e) {
+                        capturedLocation = "Location Unavailable";
+                    }
+                }, (error) => {
+                    capturedLocation = "Location Access Denied";
+                });
+            } else {
+                capturedLocation = "GPS Not Supported";
+            }
+        }
+
         // --- IN-BROWSER CAMERA ---
 
         openCameraBtn.addEventListener('click', async () => {
+            fetchLocation(); // Start fetching location immediately
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
@@ -406,6 +440,7 @@
 
         // Manual Upload Fallback
         manualUploadBtn.addEventListener('click', () => {
+            fetchLocation(); // Start fetching location for upload too
             manualFileInput.click();
         });
 
@@ -421,6 +456,8 @@
                     processCanvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     
+                    applyTimestamp(ctx, processCanvas.width, processCanvas.height);
+                    
                     capturedImageData = processCanvas.toDataURL('image/jpeg', 0.85);
                     capturedImagePreview.src = capturedImageData;
                     
@@ -432,7 +469,7 @@
             }
         });
 
-        // Timestamp Logic
+        // Timestamp & Location Logic
         function applyTimestamp(ctx, w, h) {
             const now = new Date();
             const day = now.getDate();
@@ -455,29 +492,60 @@
             const startX = margin + padding;
             let currentY = h - totalTextHeight - margin;
             
+            // --- LEFT SIDE TEXT ---
             ctx.strokeStyle = 'black';
             ctx.lineWidth = w * 0.004; 
             ctx.lineJoin = 'round';
             ctx.textBaseline = 'top';
+            ctx.textAlign = 'left';
 
+            // Draw Date
             ctx.font = `bold ${dateFontSize}px ${font}`;
             ctx.strokeText(dateStr, startX, currentY);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillText(dateStr, startX, currentY);
             currentY += dateFontSize * lineHeight;
 
+            // Draw Time
             ctx.font = `bold ${timeFontSize}px ${font}`;
             ctx.strokeText(timeStr, startX, currentY);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillText(timeStr, startX, currentY);
             currentY += timeFontSize * lineHeight;
             
+            // Draw Title
             ctx.font = `bold ${titleFontSize}px ${font}`;
             ctx.strokeStyle = 'white'; 
             ctx.lineWidth = w * 0.006; 
             ctx.strokeText(titleStr, startX, currentY);
             ctx.fillStyle = '#da291c'; 
             ctx.fillText(titleStr, startX, currentY);
+
+            // --- RIGHT SIDE TEXT ---
+            ctx.textAlign = 'right';
+            ctx.strokeStyle = 'black'; 
+            ctx.lineWidth = w * 0.004; 
+            
+            // Align with the 2nd line of the left side (Time)
+            let rightY = h - totalTextHeight - margin + (dateFontSize * lineHeight); 
+            
+            // Draw Shop Code
+            const shopCodeInput = document.querySelector('input[name="shop_code"]').value;
+            const shopText = shopCodeInput ? `Shop: ${shopCodeInput.toUpperCase()}` : '';
+            if(shopText) {
+                ctx.font = `bold ${timeFontSize}px ${font}`;
+                ctx.strokeText(shopText, w - startX, rightY);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(shopText, w - startX, rightY);
+            }
+            
+            rightY += timeFontSize * lineHeight;
+            
+            // Draw Current GPS Location (Yellow color)
+            ctx.font = `bold ${timeFontSize}px ${font}`;
+            ctx.strokeText(capturedLocation, w - startX, rightY);
+            ctx.fillStyle = '#fde047'; // Highlighted yellow color
+            ctx.fillText(capturedLocation, w - startX, rightY);
         }
 
         retakeBtn.addEventListener('click', () => {
