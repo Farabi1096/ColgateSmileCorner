@@ -7,28 +7,23 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Noto Sans Bengali for better Bangla rendering -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
             font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(0, 72%, 90%, 1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(0, 80%, 95%, 1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(350, 80%, 90%, 1) 0, transparent 50%);
-            background-size: cover;
+            /* Match the soft gradient background from the screenshot */
+            background: linear-gradient(180deg, #ffe6e6 0%, #f9fafb 25%);
             background-attachment: fixed;
-            min-height: 100vh;
         }
         
         .loader {
             border: 3px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 3px solid #dc2626; 
-            width: 24px;
-            height: 24px;
+            border-top: 3px solid #da291c; 
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
         }
 
@@ -39,15 +34,15 @@
 
         /* Pulse animation for capture button */
         @keyframes subtlePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(218, 41, 28, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(218, 41, 28, 0); }
         }
         .animate-subtle-pulse {
             animation: subtlePulse 2s infinite;
         }
 
-        .input-group:focus-within label { color: #dc2626; }
-        .input-group:focus-within i { color: #dc2626; }
+        .input-group:focus-within label { color: #da291c; }
+        .input-group:focus-within i.icon-left { color: #da291c; }
         
         /* Custom Scrollbar for dropdowns */
         select {
@@ -55,231 +50,202 @@
             -moz-appearance: none;
             appearance: none;
         }
+        
+        /* Colgate Brand Red */
+        .bg-colgate { background-color: #da291c; }
+        .text-colgate { color: #da291c; }
+        .border-colgate { border-color: #da291c; }
     </style>
 </head>
-<body class="flex items-center justify-center p-2 sm:p-4 py-4 sm:py-8">
+<body class="flex items-start sm:items-center justify-center min-h-screen p-0 sm:p-4">
 
-    <!-- Form Container -->
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300">
+    <!-- Form Container (Full width on mobile, max-w on larger screens) -->
+    <div class="bg-white w-full max-w-md sm:rounded-2xl sm:shadow-2xl overflow-hidden min-h-screen sm:min-h-0 flex flex-col">
         
-        <!-- Header (Made Compact) -->
-        <div class="bg-red-600 p-4 sm:p-6 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-full bg-red-700 opacity-20 transform -skew-y-6 origin-top-left"></div>
-            
-            <!-- Icon and Title Inline to save vertical space -->
-            <div class="relative z-10 flex items-center justify-center gap-2 mb-1.5 sm:mb-2">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <i data-lucide="smile" class="h-5 w-5 sm:h-6 sm:w-6 text-red-600"></i>
+        <!-- Header (Exact match to screenshot) -->
+        <div class="bg-colgate px-5 py-6 text-center sm:rounded-t-2xl sm:mx-0 mx-2 mt-2 rounded-t-2xl">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                    <i data-lucide="smile" class="h-5 w-5 text-colgate"></i>
                 </div>
-                <h2 class="text-lg sm:text-xl font-bold text-white tracking-wide">কোলগেট স্মাইল কর্ণার</h2>
+                <h2 class="text-xl font-bold text-white tracking-wide">কোলগেট স্মাইল কর্ণার</h2>
             </div>
 
-            <!-- Subtitle with reduced margin and smaller text -->
-            <p class="text-red-100 relative z-10 text-[11px] sm:text-xs leading-tight px-1 sm:px-2">
+            <p class="text-white/90 text-xs sm:text-[13px] leading-relaxed px-1 font-medium">
                 এই ফর্মটি কোলগেট পালমোলিভ এর বিশেষ প্রোগ্রাম "কোলগেট স্মাইল কর্ণার" এর জন্য নির্ধারিত দোকানগুলোর ছবি সংগ্রহের জন্য তৈরী করা হয়েছে।
             </p>
         </div>
 
         <!-- Form Content -->
-        <div class="p-4 sm:p-8">
-            <form id="customForm" class="space-y-4 sm:space-y-6">
+        <div class="px-5 py-6 flex-grow">
+            <form id="customForm" class="space-y-5">
                 
                 <!-- SECTION 1: Shop Details -->
-                <div class="border-b border-gray-100 pb-1 sm:pb-2 mb-3 sm:mb-4">
-                    <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center">
-                        <span class="bg-red-100 text-red-600 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs sm:text-sm mr-2">১</span>
+                <div class="border-b border-gray-100 pb-2.5 mb-2">
+                    <h3 class="text-[17px] font-bold text-gray-800 flex items-center">
+                        <span class="bg-red-50 text-colgate rounded-full w-7 h-7 flex items-center justify-center text-sm mr-2.5 font-bold">১</span>
                         দোকানের তথ্য
                     </h3>
                 </div>
 
                 <!-- Field 1: Display Month -->
                 <div class="input-group relative">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 transition-colors">
-                        মাস <span class="text-red-500">*</span>
+                    <label class="block text-[13px] font-bold text-gray-700 mb-1.5 transition-colors">
+                        মাস <span class="text-colgate">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i data-lucide="calendar" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 transition-colors"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i data-lucide="calendar" class="h-[18px] w-[18px] text-gray-400 icon-left transition-colors"></i>
                         </div>
                         <select name="display_month" required
-                            class="pl-8 sm:pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 text-xs sm:text-sm py-2 sm:py-3 transition-all outline-none">
+                            class="pl-10 block w-full rounded-xl border border-gray-200 bg-white focus:border-colgate focus:ring-1 focus:ring-colgate text-gray-800 text-[14px] py-3 transition-all outline-none font-medium">
                             <option value="" disabled selected>মাস</option>
-                            <option value="November">Nov</option>
-                            <option value="December">Dec</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
                         </select>
-                        <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                            <i data-lucide="chevron-down" class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400"></i>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Field: Area Name -->
                 <div class="input-group relative">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 transition-colors">
-                        এরিয়া <span class="text-red-500">*</span>
+                    <label class="block text-[13px] font-bold text-gray-700 mb-1.5 transition-colors">
+                        এরিয়া <span class="text-colgate">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i data-lucide="map-pin" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 transition-colors"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i data-lucide="map-pin" class="h-[18px] w-[18px] text-gray-400 icon-left transition-colors"></i>
                         </div>
                         <select name="area_name" id="areaSelect" required
-                            class="pl-8 sm:pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 text-xs sm:text-sm py-2 sm:py-3 transition-all outline-none">
+                            class="pl-10 block w-full rounded-xl border border-gray-200 bg-white focus:border-colgate focus:ring-1 focus:ring-colgate text-gray-800 text-[14px] py-3 transition-all outline-none font-medium">
                             <option value="" disabled selected>এরিয়া</option>
                             <option value="CTG">CTG</option>
                             <option value="DHAKA">DHAKA</option>
                         </select>
-                        <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                            <i data-lucide="chevron-down" class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400"></i>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Field 2: Distribution Name -->
                 <div class="input-group relative">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 transition-colors">
-                        ডিস্ট্রিবিউশন নাম <span class="text-red-500">*</span>
+                    <label class="block text-[13px] font-bold text-gray-700 mb-1.5 transition-colors">
+                        ডিস্ট্রিবিউশন নাম <span class="text-colgate">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i data-lucide="truck" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 transition-colors"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i data-lucide="truck" class="h-[18px] w-[18px] text-gray-400 icon-left transition-colors"></i>
                         </div>
                         <select name="distribution_name" id="distSelect" required
-                            class="pl-8 sm:pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 text-xs sm:text-sm py-2 sm:py-3 transition-all outline-none">
+                            class="pl-10 block w-full rounded-xl border border-gray-200 bg-white focus:border-colgate focus:ring-1 focus:ring-colgate text-gray-800 text-[14px] py-3 transition-all outline-none font-medium">
                             <option value="" disabled selected>প্রথমে এরিয়া সিলেক্ট করুন</option>
                         </select>
-                        <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                            <i data-lucide="chevron-down" class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400"></i>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Field 3: Slab -->
                 <div class="input-group relative">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 transition-colors">
-                        স্ল্যাব <span class="text-red-500">*</span>
+                    <label class="block text-[13px] font-bold text-gray-700 mb-1.5 transition-colors">
+                        স্ল্যাব <span class="text-colgate">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i data-lucide="layers" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 transition-colors"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i data-lucide="layers" class="h-[18px] w-[18px] text-gray-400 icon-left transition-colors"></i>
                         </div>
                         <select name="slab" required
-                            class="pl-8 sm:pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 text-xs sm:text-sm py-2 sm:py-3 transition-all outline-none">
+                            class="pl-10 block w-full rounded-xl border border-gray-200 bg-white focus:border-colgate focus:ring-1 focus:ring-colgate text-gray-800 text-[14px] py-3 transition-all outline-none font-medium">
                             <option value="" disabled selected>স্ল্যাব</option>
                             <option value="Slab 1">Slab 1</option>
                             <option value="Slab 2">Slab 2</option>
                         </select>
-                        <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                            <i data-lucide="chevron-down" class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400"></i>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Field 4: Shop Code -->
                 <div class="input-group relative">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 transition-colors">
-                        কোড <span class="text-red-500">*</span>
+                    <label class="block text-[13px] font-bold text-gray-700 mb-1.5 transition-colors">
+                        কোড <span class="text-colgate">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i data-lucide="hash" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 transition-colors"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i data-lucide="hash" class="h-[18px] w-[18px] text-gray-300 icon-left transition-colors"></i>
                         </div>
                         <input type="text" name="shop_code" required
-                            class="pl-8 sm:pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 border focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:bg-white text-gray-900 text-xs sm:text-sm py-2 sm:py-3 transition-all outline-none uppercase font-semibold tracking-wide" 
+                            class="pl-10 block w-full rounded-xl border border-gray-200 bg-white focus:border-colgate focus:ring-1 focus:ring-colgate text-gray-800 text-[14px] py-3 transition-all outline-none uppercase font-semibold tracking-wide" 
                             placeholder="BDC...">
                     </div>
                 </div>
 
                 <!-- SECTION 2: Image Upload -->
-                <div class="border-b border-gray-100 pb-1 sm:pb-2 mb-3 sm:mb-4 mt-5 sm:mt-8">
-                    <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center">
-                        <span class="bg-red-100 text-red-600 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs sm:text-sm mr-2">২</span>
+                <div class="border-b border-gray-100 pb-2.5 mb-2 mt-8">
+                    <h3 class="text-[17px] font-bold text-gray-800 flex items-center">
+                        <span class="bg-red-50 text-colgate rounded-full w-7 h-7 flex items-center justify-center text-sm mr-2.5 font-bold">২</span>
                         ছবি স্ক্যান
                     </h3>
                 </div>
 
-                <!-- Field 5: Shop Image Upload & AI Camera -->
+                <!-- Field 5: Shop Image Upload & Camera -->
                 <div class="input-group relative">
                     
                     <input type="file" id="manualFileInput" accept="image/*" class="hidden">
 
-                    <!-- Camera Trigger Button -->
-                    <div id="cameraTriggerContainer">
-                        <button type="button" id="openCameraBtn" class="flex flex-row items-center justify-center w-full py-3 sm:py-4 border-2 border-dashed border-red-300 rounded-xl bg-red-50 hover:bg-red-100 transition-all duration-300 group relative overflow-hidden">
-                            <!-- Shine effect -->
-                            <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-40 group-hover:animate-[shine_1s]"></div>
-                            
-                            <div class="p-2 sm:p-3 rounded-full bg-white mr-3 sm:mr-4 shadow-sm group-hover:scale-110 transition-transform duration-300 z-10 border border-red-100">
-                                <i data-lucide="scan" class="h-5 w-5 sm:h-6 sm:w-6 text-red-600"></i>
+                    <!-- Camera Trigger Button Area -->
+                    <div id="cameraTriggerContainer" class="flex flex-col items-center">
+                        <!-- Main Scanner Button -->
+                        <button type="button" id="openCameraBtn" class="flex flex-row items-center justify-center w-full py-4 border-[1.5px] border-dashed border-red-300 rounded-2xl bg-red-50/50 hover:bg-red-50 transition-colors group">
+                            <div class="bg-white p-2 rounded-full mr-3 shadow-sm border border-red-100 group-hover:scale-105 transition-transform duration-300">
+                                <i data-lucide="scan" class="h-[22px] w-[22px] text-colgate"></i>
                             </div>
-                            <div class="flex flex-col items-start z-10">
-                                <span class="text-sm sm:text-base font-bold text-red-700">স্মার্ট ক্যামেরা স্ক্যানার</span>
-                                <span class="text-[10px] sm:text-xs text-red-500 font-medium">সরাসরি ছবি তুলতে ক্লিক করুন</span>
+                            <div class="flex flex-col items-start">
+                                <span class="text-[15px] font-bold text-colgate leading-tight">স্মার্ট ক্যামেরা স্ক্যানার</span>
+                                <span class="text-[11px] text-red-400 font-medium">সরাসরি ছবি তুলতে ক্লিক করুন</span>
                             </div>
                         </button>
                         
-                        <div class="mt-3 text-center">
-                            <button type="button" id="manualUploadBtn" class="text-xs sm:text-sm font-medium text-gray-500 hover:text-red-600 flex items-center justify-center mx-auto transition-colors bg-gray-50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-gray-200 hover:border-red-200">
-                                <i data-lucide="upload-cloud" class="h-3 w-3 sm:h-4 sm:w-4 mr-2"></i>
-                                গ্যালারি থেকে আপলোড
-                            </button>
-                        </div>
+                        <!-- Manual Upload Pill Button -->
+                        <button type="button" id="manualUploadBtn" class="mt-4 flex items-center justify-center text-[13px] font-medium text-gray-500 hover:text-colgate bg-white border border-gray-200 px-6 py-2.5 rounded-full shadow-sm hover:border-colgate transition-colors">
+                            <i data-lucide="cloud-upload" class="h-4 w-4 mr-2"></i>
+                            গ্যালারি থেকে আপলোড
+                        </button>
                     </div>
 
-                    <!-- In-Browser Smart Camera Container -->
+                    <!-- In-Browser Camera Container -->
                     <div id="cameraContainer" class="hidden mt-2 relative">
-                        <div class="relative rounded-xl overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full flex items-center justify-center shadow-inner">
+                        <div class="relative rounded-2xl overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full flex items-center justify-center shadow-inner">
                             <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
-                            
-                            <!-- Scanner Overlay (Fills the area down to the button) -->
-                            <div id="scannerOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-start bg-black bg-opacity-30 transition-all duration-300 pt-6 pb-24">
-                                
-                                <!-- Viewfinder Box (Stretches downwards) -->
-                                <div id="viewfinder" class="w-11/12 h-full border-2 border-white/60 relative rounded-xl transition-all duration-300 overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]">
-                                    
-                                    <!-- Corner Brackets -->
-                                    <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg transition-colors duration-300 bracket"></div>
-                                    <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-lg transition-colors duration-300 bracket"></div>
-                                    <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-lg transition-colors duration-300 bracket"></div>
-                                    <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-lg transition-colors duration-300 bracket"></div>
-                                </div>
-                                
-                                <!-- Status Text (Centered with shadow overlay) -->
-                                <div id="aiStatusLabel" class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 z-10 pointer-events-none">
-                                    <div class="bg-black/30 backdrop-blur-md px-4 py-2.5 rounded-lg border border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.6)] flex flex-col items-center gap-1.5">
-                                        <span class="animate-pulse h-2 w-2 bg-yellow-400 rounded-full inline-block shadow-[0_0_8px_rgba(250,204,21,1)]"></span>
-                                        <span class="text-white text-xs sm:text-sm font-bold text-center tracking-wide" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.9);">কোলগেট ডিসপ্লেটি বক্সের<br>মাঝে রেখে ছবি তুলুন</span>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Capture Button (Smaller & Bottom Middle) -->
-                            <button type="button" id="captureBtn" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-2xl transition-transform hover:scale-110 pointer-events-auto animate-subtle-pulse z-20">
-                                <div id="captureInnerRing" class="w-12 h-12 rounded-full border-[3px] border-red-600 flex items-center justify-center bg-white transition-colors duration-300">
-                                    <div id="captureCenter" class="w-9 h-9 rounded-full bg-red-600 transition-colors duration-300 flex items-center justify-center shadow-inner">
+                            <!-- Capture Button -->
+                            <button type="button" id="captureBtn" class="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-transform hover:scale-110 pointer-events-auto animate-subtle-pulse z-20">
+                                <div id="captureInnerRing" class="w-12 h-12 rounded-full border-[3px] border-colgate flex items-center justify-center bg-white transition-colors duration-300">
+                                    <div id="captureCenter" class="w-9 h-9 rounded-full bg-colgate transition-colors duration-300 flex items-center justify-center shadow-inner">
                                         <i data-lucide="camera" class="text-white h-4 w-4"></i>
                                     </div>
                                 </div>
                             </button>
                         </div>
-                        <button type="button" id="closeCameraBtn" class="mt-4 text-sm font-semibold text-gray-500 hover:text-red-600 w-full text-center transition-colors flex items-center justify-center">
+                        <button type="button" id="closeCameraBtn" class="mt-4 text-[13px] font-semibold text-gray-500 hover:text-colgate w-full text-center transition-colors flex items-center justify-center">
                             <i data-lucide="x" class="h-4 w-4 mr-1"></i> ক্যামেরা বন্ধ করুন
                         </button>
                     </div>
 
                     <!-- Captured Preview Container -->
                     <div id="previewContainer" class="hidden mt-2 relative">
-                        <div class="relative rounded-xl overflow-hidden border-2 border-green-500 shadow-md">
+                        <div class="relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                             <img id="capturedImagePreview" class="w-full h-auto block">
                             
                             <!-- Retake Button -->
-                            <button type="button" id="retakeBtn" class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-red-600 rounded-full p-2.5 shadow-lg hover:bg-white transition-all transform hover:rotate-180 duration-500">
-                                <i data-lucide="refresh-cw" class="h-5 w-5"></i>
+                            <button type="button" id="retakeBtn" class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-colgate rounded-full p-2.5 shadow-md hover:bg-white transition-all transform hover:rotate-180 duration-500">
+                                <i data-lucide="refresh-cw" class="h-[18px] w-[18px]"></i>
                             </button>
-                            
-                            <!-- Success Badge on Image -->
-                            <div class="absolute bottom-3 right-3 bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center shadow-lg">
-                                <i data-lucide="check" class="h-3 w-3 mr-1"></i> স্ক্যান সম্পন্ন
-                            </div>
                         </div>
                     </div>
                     
@@ -287,10 +253,10 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="pt-2 sm:pt-4">
+                <div class="pt-4 pb-2">
                     <button type="submit" id="submitBtn"
-                        class="w-full flex justify-center items-center py-3 sm:py-4 px-4 border border-transparent rounded-xl shadow-md text-sm sm:text-base font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:-translate-y-1">
-                        <i data-lucide="send" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" id="btnIcon"></i>
+                        class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl shadow-md text-[15px] font-bold text-white bg-colgate hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-colgate transition-all duration-200 transform hover:-translate-y-0.5">
+                        <i data-lucide="send" class="h-[18px] w-[18px] mr-2" id="btnIcon"></i>
                         <span id="btnText">জমা দিন (Submit)</span>
                         <div id="btnLoader" class="loader hidden"></div>
                     </button>
@@ -298,24 +264,25 @@
 
             </form>
 
-            <div id="successMessage" class="hidden text-center py-6 sm:py-8 animate-fade-in">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6 shadow-inner">
-                    <i data-lucide="check-circle-2" class="h-10 w-10 text-green-600"></i>
+            <div id="successMessage" class="hidden text-center py-8 animate-fade-in">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-50 mb-4 shadow-sm border border-green-100">
+                    <i data-lucide="check-circle-2" class="h-8 w-8 text-green-500"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">সফলভাবে জমা দেওয়া হয়েছে!</h3>
-                <p class="text-base text-gray-600 mb-6">আপনার তথ্য এবং ছবি আমাদের সিস্টেমে সংরক্ষিত হয়েছে।</p>
-                <button onclick="resetForm()" class="bg-gray-100 text-gray-800 hover:bg-gray-200 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center mx-auto">
-                    <i data-lucide="plus" class="h-4 w-4 mr-2"></i> আরেকটি ফর্ম পূরণ করুন
+                <p class="text-[14px] text-gray-500 mb-6">আপনার তথ্য এবং ছবি আমাদের সিস্টেমে সংরক্ষিত হয়েছে।</p>
+                <button onclick="resetForm()" class="bg-gray-50 text-gray-700 hover:text-colgate border border-gray-200 hover:border-colgate font-semibold py-2.5 px-6 rounded-full transition-colors flex items-center justify-center mx-auto text-[14px]">
+                    <i data-lucide="plus" class="h-4 w-4 mr-1.5"></i> আরেকটি ফর্ম পূরণ করুন
                 </button>
             </div>
             
-             <div id="errorMessage" class="hidden text-center py-4 text-red-600 text-sm font-semibold bg-red-50 rounded-lg mt-4 border border-red-100">
-                <i data-lucide="alert-circle" class="h-5 w-5 inline-block mr-1 mb-0.5"></i> কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
+             <div id="errorMessage" class="hidden text-center py-3 text-colgate text-[13px] font-semibold bg-red-50 rounded-lg mt-4 border border-red-100">
+                <i data-lucide="alert-circle" class="h-4 w-4 inline-block mr-1 mb-0.5"></i> কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
             </div>
         </div>
         
-        <div class="bg-gray-50 px-8 py-5 border-t border-gray-100 flex flex-col items-center">
-            <p class="text-[10px] text-center text-gray-400 font-medium">কোলগেট স্মাইল কর্ণার প্রোগ্রাম &copy; ২০২৫</p>
+        <!-- Footer -->
+        <div class="pb-6 pt-2 flex flex-col items-center bg-white sm:rounded-b-2xl">
+            <p class="text-[11px] text-center text-gray-400 font-medium tracking-wide">কোলগেট স্মাইল কর্ণার প্রোগ্রাম &copy; ২০২৫</p>
         </div>
     </div>
 
@@ -344,7 +311,6 @@
         const cameraFeed = document.getElementById('cameraFeed');
         const capturedImagePreview = document.getElementById('capturedImagePreview');
         const processCanvas = document.getElementById('processCanvas');
-        const viewfinder = document.getElementById('viewfinder');
 
         let stream = null;
         let capturedImageData = null;
@@ -360,7 +326,7 @@
         areaSelect.addEventListener('change', function() {
             const selectedArea = this.value;
             const distributors = distributionData[selectedArea] || [];
-            distSelect.innerHTML = '<option value="" disabled selected>দোকানটি যে ডিস্ট্রিবিউশন এর অধীনে তা সিলেক্ট করুন</option>';
+            distSelect.innerHTML = '<option value="" disabled selected>প্রথমে এরিয়া সিলেক্ট করুন</option>';
             distributors.forEach(dist => {
                 const option = document.createElement('option');
                 option.value = dist;
@@ -369,7 +335,7 @@
             });
         });
 
-        // --- IN-BROWSER GUIDED SCANNER ---
+        // --- IN-BROWSER CAMERA ---
 
         openCameraBtn.addEventListener('click', async () => {
             try {
@@ -403,17 +369,15 @@
         // --- CAPTURE PROCESS ---
 
         captureBtn.addEventListener('click', () => {
-            // Stop pulse animation
             captureBtn.classList.remove('animate-subtle-pulse');
             
-            // Visual feedback for capture (Flash green effect)
-            viewfinder.classList.replace('border-white/60', 'border-green-500');
-            viewfinder.classList.add('bg-green-500/30');
+            const flashOverlay = document.createElement('div');
+            flashOverlay.className = 'absolute inset-0 bg-white opacity-70 z-10 transition-opacity duration-150';
+            cameraFeed.parentElement.appendChild(flashOverlay);
             
             setTimeout(() => {
                 const ctx = processCanvas.getContext('2d');
                 
-                // Full resolution capture
                 processCanvas.width = cameraFeed.videoWidth;
                 processCanvas.height = cameraFeed.videoHeight;
                 ctx.drawImage(cameraFeed, 0, 0, processCanvas.width, processCanvas.height);
@@ -424,10 +388,7 @@
                 capturedImagePreview.src = capturedImageData;
                 
                 stopCamera();
-                
-                // Reset Viewfinder flash effect
-                viewfinder.classList.replace('border-green-500', 'border-white/60');
-                viewfinder.classList.remove('bg-green-500/30');
+                flashOverlay.remove();
                 
                 cameraContainer.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
@@ -506,7 +467,7 @@
             ctx.strokeStyle = 'white'; 
             ctx.lineWidth = w * 0.006; 
             ctx.strokeText(titleStr, startX, currentY);
-            ctx.fillStyle = '#dc2626'; 
+            ctx.fillStyle = '#da291c'; 
             ctx.fillText(titleStr, startX, currentY);
         }
 
@@ -515,7 +476,7 @@
             manualFileInput.value = '';  
             previewContainer.classList.add('hidden');
             cameraTriggerContainer.classList.remove('hidden');
-            captureBtn.classList.add('animate-subtle-pulse'); // Restore pulse animation
+            captureBtn.classList.add('animate-subtle-pulse');
         });
 
         // Submission
@@ -529,7 +490,6 @@
                 return;
             }
 
-            // UI Loading State
             btnText.classList.add('hidden');
             btnIcon.classList.add('hidden');
             btnLoader.classList.remove('hidden');
@@ -539,7 +499,6 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            // FORCE UPPERCASE for Shop Code before sending to Google Sheets
             if(data.shop_code) {
                 data.shop_code = data.shop_code.toUpperCase().trim();
             }
