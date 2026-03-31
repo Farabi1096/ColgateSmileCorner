@@ -236,11 +236,11 @@
                         <div class="relative rounded-xl overflow-hidden bg-black aspect-[3/4] sm:aspect-video w-full flex items-center justify-center shadow-inner">
                             <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
                             
-                            <!-- Scanner Overlay -->
-                            <div id="scannerOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-black bg-opacity-30 transition-all duration-300">
+                            <!-- Scanner Overlay (Added pb-24 to push the box upwards) -->
+                            <div id="scannerOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-black bg-opacity-30 transition-all duration-300 pb-24">
                                 
-                                <!-- Viewfinder Box -->
-                                <div id="viewfinder" class="w-4/5 h-3/5 border-2 border-white/60 relative rounded-xl transition-all duration-300 overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]">
+                                <!-- Viewfinder Box (Changed h-3/5 to h-1/2 for better proportion) -->
+                                <div id="viewfinder" class="w-4/5 h-1/2 border-2 border-white/60 relative rounded-xl transition-all duration-300 overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]">
                                     
                                     <!-- Corner Brackets -->
                                     <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg transition-colors duration-300 bracket"></div>
@@ -249,18 +249,20 @@
                                     <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-lg transition-colors duration-300 bracket"></div>
                                 </div>
                                 
-                                <!-- Status Text -->
-                                <div id="aiStatusLabel" class="mt-6 bg-black/80 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg border border-white/10">
-                                    <span class="animate-pulse h-2.5 w-2.5 bg-yellow-400 rounded-full inline-block shadow-[0_0_8px_rgba(250,204,21,0.8)]"></span>
-                                    <span>কোলগেট ডিসপ্লেটি বক্সের মাঝে রেখে ছবি তুলুন</span>
+                                <!-- Status Text (Centered with shadow overlay) -->
+                                <div id="aiStatusLabel" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 z-10 pointer-events-none">
+                                    <div class="bg-black/30 backdrop-blur-md px-4 py-2.5 rounded-lg border border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.6)] flex flex-col items-center gap-1.5">
+                                        <span class="animate-pulse h-2 w-2 bg-yellow-400 rounded-full inline-block shadow-[0_0_8px_rgba(250,204,21,1)]"></span>
+                                        <span class="text-white text-xs sm:text-sm font-bold text-center tracking-wide" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.9);">কোলগেট ডিসপ্লেটি বক্সের<br>মাঝে রেখে ছবি তুলুন</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Capture Button (Pulsing to guide user) -->
-                            <button type="button" id="captureBtn" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-2xl transition-transform hover:scale-110 pointer-events-auto animate-subtle-pulse">
-                                <div id="captureInnerRing" class="w-16 h-16 rounded-full border-4 border-red-600 flex items-center justify-center bg-white transition-colors duration-300">
-                                    <div id="captureCenter" class="w-12 h-12 rounded-full bg-red-600 transition-colors duration-300 flex items-center justify-center shadow-inner">
-                                        <i data-lucide="camera" class="text-white h-6 w-6"></i>
+                            <!-- Capture Button (Smaller & Bottom Middle) -->
+                            <button type="button" id="captureBtn" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-2xl transition-transform hover:scale-110 pointer-events-auto animate-subtle-pulse z-20">
+                                <div id="captureInnerRing" class="w-12 h-12 rounded-full border-[3px] border-red-600 flex items-center justify-center bg-white transition-colors duration-300">
+                                    <div id="captureCenter" class="w-9 h-9 rounded-full bg-red-600 transition-colors duration-300 flex items-center justify-center shadow-inner">
+                                        <i data-lucide="camera" class="text-white h-4 w-4"></i>
                                     </div>
                                 </div>
                             </button>
