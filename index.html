@@ -506,6 +506,27 @@
             lucide.createIcons();
         }
 
+        // Updated Distributor List categorized by Area
+        const areaDistData = { 
+            "CTG": [
+                "Next Associates", 
+                "ARC Trading", 
+                "M/S Farid Enterprise", 
+                "P M Traders", 
+                "M/S Shihab Enterprise"
+            ], 
+            "DHAKA": [
+                "Takwa Enterprise", 
+                "Unitrust Trading Co.", 
+                "Paragon Marketing Limited", 
+                "Self Tech Marketing Ltd", 
+                "M/s. Zerin Enterprise", 
+                "M/S Sanuar Enterprise", 
+                "M/S Hasan Brothers Corporation", 
+                "M/S Hasan Brothers Corporation 2"
+            ] 
+        };
+
         areaSelect.addEventListener('change', () => {
             const list = areaDistData[areaSelect.value] || [];
             distSelect.innerHTML = '<option value="" disabled selected>ডিস্ট্রিবিউশন নাম</option>' + list.map(d => `<option value="${d}">${d}</option>`).join('');
@@ -586,6 +607,7 @@
             const data = Object.fromEntries(new FormData(e.target).entries());
             data.shop_image = { data: capturedImageData, name: `pjp_${Date.now()}.jpg` };
             try {
+                const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9WuBOgKRgfol24Def7xKGwUHu6zfJPhdpuwqlE58yWgraHM7uXKpJlCmwa4HCKqNW/exec';
                 await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' });
                 const s = JSON.parse(localStorage.getItem('colgate_merch_session')) || { date: new Date().toDateString(), startTime: Date.now(), submittedCodes: [], count: 0 };
                 s.count++; s.endTime = Date.now(); if(!s.submittedCodes.includes(data.shop_code.toUpperCase().trim())) s.submittedCodes.push(data.shop_code.toUpperCase().trim());
